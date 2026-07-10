@@ -12,7 +12,22 @@ const app = express();
 // ensure uploads folder exists
 if (!fs.existsSync("uploads")) fs.mkdirSync("uploads");
 
-app.use(cors());
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.CLIENT_URL, // set this in Render after frontend is deployed
+];
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+  })
+);
 app.use(express.json());
 
 app.use("/api/upload", uploadRoutes);
