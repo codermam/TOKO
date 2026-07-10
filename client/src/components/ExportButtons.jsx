@@ -1,34 +1,68 @@
-import html2canvas from "html2canvas";
+import { useState } from "react";
+import { toPng, toJpeg } from "html-to-image";
 import jsPDF from "jspdf";
 import { useReactToPrint } from "react-to-print";
 
 export default function ExportButtons({ chartRef }) {
-  const captureCanvas = async () => {
-    if (!chartRef.current) return null;
-    return html2canvas(chartRef.current, { backgroundColor: "#ffffff", scale: 2 });
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const captureOptions = {
+    backgroundColor: "#ffffff",
+    pixelRatio: 2,
+    cacheBust: true,
+    skipFonts: true, // avoids CORS failures embedding Google Fonts
   };
 
   const downloadImage = async (format) => {
-    const canvas = await captureCanvas();
-    if (!canvas) return;
-    const mime = format === "jpg" ? "image/jpeg" : "image/png";
-    const link = document.createElement("a");
-    link.download = `toko-chart.${format}`;
-    link.href = canvas.toDataURL(mime, 1.0);
-    link.click();
+    if (!chartRef.current) return;
+    setError("");
+    setBusy(true);
+    try {
+      const dataUrl =
+        format === "jpg"
+          ? await toJpeg(chartRef.current, captureOptions)
+          : await toPng(chartRef.current, captureOptions);
+
+      const link = document.createElement("a");
+      link.download = `toko-chart.${format}`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error("Export failed:", err);
+      setError(`Couldn't create the ${format.toUpperCase()}. Try again, or use Print instead.`);
+    } finally {
+      setBusy(false);
+    }
   };
 
   const downloadPDF = async () => {
-    const canvas = await captureCanvas();
-    if (!canvas) return;
-    const imgData = canvas.toDataURL("image/png");
-    const pdf = new jsPDF({
-      orientation: "landscape",
-      unit: "px",
-      format: [canvas.width, canvas.height],
-    });
-    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
-    pdf.save("toko-chart.pdf");
+    if (!chartRef.current) return;
+    setError("");
+    setBusy(true);
+    try {
+      const dataUrl = await toPng(chartRef.current, captureOptions);
+
+      const img = new Image();
+      img.src = dataUrl;
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      const pdf = new jsPDF({
+        orientation: img.width >= img.height ? "landscape" : "portrait",
+        unit: "px",
+        format: [img.width, img.height],
+      });
+      pdf.addImage(dataUrl, "PNG", 0, 0, img.width, img.height);
+      pdf.save("toko-chart.pdf");
+    } catch (err) {
+      console.error("PDF export failed:", err);
+      setError("Couldn't create the PDF. Try again, or use Print instead.");
+    } finally {
+      setBusy(false);
+    }
   };
 
   const handlePrint = useReactToPrint({
@@ -42,19 +76,32 @@ export default function ExportButtons({ chartRef }) {
         03 — Export
       </p>
       <div className="flex flex-row flex-wrap gap-3">
-        <button onClick={() => downloadImage("png")} className="btn btn-sm btn-primary font-mono-data">
-          Download PNG
+        <button
+          onClick={() => downloadImage("png")}
+          disabled={busy}
+          className="btn btn-sm btn-primary font-mono-data"
+        >
+          {busy ? "Working…" : "Download PNG"}
         </button>
-        <button onClick={() => downloadImage("jpg")} className="btn btn-sm btn-primary font-mono-data">
-          Download JPG
+        <button
+          onClick={() => downloadImage("jpg")}
+          disabled={busy}
+          className="btn btn-sm btn-primary font-mono-data"
+        >
+          {busy ? "Working…" : "Download JPG"}
         </button>
-        <button onClick={downloadPDF} className="btn btn-sm btn-secondary font-mono-data">
-          Download PDF
+        <button
+          onClick={downloadPDF}
+          disabled={busy}
+          className="btn btn-sm btn-secondary font-mono-data"
+        >
+          {busy ? "Working…" : "Download PDF"}
         </button>
         <button onClick={handlePrint} className="btn btn-sm btn-outline font-mono-data">
           Print
         </button>
       </div>
+      {error && <p className="text-brick text-sm mt-3">{error}</p>}
     </div>
   );
 }
