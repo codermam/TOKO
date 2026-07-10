@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper-rgb: 250 250 247;
+  --ink-rgb: 27 36 48;
+  --pine-rgb: 47 111 94;
+  --amber-rgb: 224 164 88;
+  --brick-rgb: 179 63 63;
+  --grid-line: rgba(27, 36, 48, 0.05);
+  --gridline: rgba(27, 36, 48, 0.15);
+}
+
+[data-theme="tokoDark"] {
+  --paper-rgb: 22 27 34;
+  --ink-rgb: 237 238 240;
+  --pine-rgb: 76 156 130;
+  --amber-rgb: 224 164 88;
+  --brick-rgb: 217 100 95;
+  --grid-line: rgba(237, 238, 240, 0.06);
+  --gridline: rgba(237, 238, 240, 0.12);
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  font-family: "IBM Plex Sans", sans-serif;
+  color: rgb(var(--ink-rgb));
+  background-color: rgb(var(--paper-rgb));
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.font-display {
+  font-family: "Space Grotesk", sans-serif;
+}
+.font-mono-data {
+  font-family: "IBM Plex Mono", monospace;
+}
+
+/* Blueprint corner marks — nods to drafting-table / plotter theme */
+.corner-marks {
+  position: relative;
+}
+.corner-marks::before,
+.corner-marks::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-color: rgb(var(--pine-rgb));
+  border-style: solid;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.corner-marks::before {
+  top: -6px;
+  left: -6px;
+  border-width: 2px 0 0 2px;
+}
+.corner-marks::after {
+  bottom: -6px;
+  right: -6px;
+  border-width: 0 2px 2px 0;
+}
+
+/* Hero signature: a plotted line chart drawing itself */
+.plot-line {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: draw-line 2s ease-out forwards;
+}
+@keyframes draw-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.plot-dot {
+  opacity: 0;
+  animation: dot-in 0.4s ease-out forwards;
+}
+@keyframes dot-in {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Chart entrance — replays whenever axis/type selection changes */
+.chart-enter {
+  animation: chart-enter 0.5s ease-out;
+}
+@keyframes chart-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .plot-line,
+  .plot-dot,
+  .chart-enter {
+    animation: none !important;
+    stroke-dashoffset: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
