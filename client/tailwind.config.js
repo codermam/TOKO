@@ -1,64 +1,65 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/**/*.{js,jsx}"],
+  content: [
+    "./index.html",
+    "./src/**/*.{js,jsx}",
+  ],
+
   theme: {
     extend: {
       fontFamily: {
-        display: ["'Space Grotesk'", "sans-serif"],
-        body: ["'IBM Plex Sans'", "sans-serif"],
-        mono: ["'IBM Plex Mono'", "monospace"],
+        display: ["Space Grotesk", "sans-serif"],
+        body: ["Inter", "sans-serif"],
+        mono: ["IBM Plex Mono", "monospace"],
       },
-      colors: {
-        paper: "rgb(var(--paper-rgb) / <alpha-value>)",
-        ink: "rgb(var(--ink-rgb) / <alpha-value>)",
-        pine: "rgb(var(--pine-rgb) / <alpha-value>)",
-        amber: "rgb(var(--amber-rgb) / <alpha-value>)",
-        brick: "rgb(var(--brick-rgb) / <alpha-value>)",
-        gridline: "rgb(var(--ink-rgb) / 0.15)",
+
+      boxShadow: {
+        soft: "0 10px 40px rgba(0,0,0,.08)",
+        glow: "0 0 40px rgba(59,130,246,.18)",
+      },
+
+      animation: {
+        float: "float 4s ease-in-out infinite",
+        fade: "fade .45s ease",
+        pop: "pop .3s ease",
+      },
+
+      keyframes: {
+        float: {
+          "0%,100%": {
+            transform: "translateY(0px)",
+          },
+          "50%": {
+            transform: "translateY(-6px)",
+          },
+        },
+
+        fade: {
+          from: {
+            opacity: 0,
+          },
+          to: {
+            opacity: 1,
+          },
+        },
+
+        pop: {
+          from: {
+            opacity: 0,
+            transform: "scale(.96)",
+          },
+          to: {
+            opacity: 1,
+            transform: "scale(1)",
+          },
+        },
       },
     },
   },
+
   plugins: [require("daisyui")],
+
   daisyui: {
-    themes: [
-      {
-        toko: {
-          primary: "#2F6F5E",
-          secondary: "#E0A458",
-          accent: "#B33F3F",
-          neutral: "#1B2430",
-          "base-100": "#FAFAF7",
-          "base-200": "#F1EFE6",
-          "base-300": "#E4E1D3",
-          info: "#3D7FBF",
-          success: "#2F6F5E",
-          warning: "#E0A458",
-          error: "#B33F3F",
-          "--rounded-box": "0.35rem",
-          "--rounded-btn": "0.25rem",
-          "--rounded-badge": "0.25rem",
-          "--tab-radius": "0.25rem",
-        },
-      },
-      {
-        tokoDark: {
-          primary: "#4C9C82",
-          secondary: "#E0A458",
-          accent: "#D9645F",
-          neutral: "#EDEEF0",
-          "base-100": "#161B22",
-          "base-200": "#1D232C",
-          "base-300": "#262E38",
-          info: "#5B9BD5",
-          success: "#4C9C82",
-          warning: "#E0A458",
-          error: "#D9645F",
-          "--rounded-box": "0.35rem",
-          "--rounded-btn": "0.25rem",
-          "--rounded-badge": "0.25rem",
-          "--tab-radius": "0.25rem",
-        },
-      },
-    ],
+    themes: ["light", "dark"],
   },
 };

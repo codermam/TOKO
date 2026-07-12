@@ -2,117 +2,198 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --paper-rgb: 250 250 247;
-  --ink-rgb: 27 36 48;
-  --pine-rgb: 47 111 94;
-  --amber-rgb: 224 164 88;
-  --brick-rgb: 179 63 63;
-  --grid-line: rgba(27, 36, 48, 0.05);
-  --gridline: rgba(27, 36, 48, 0.15);
-}
+/* ------------------------------
+   Base
+--------------------------------*/
 
-[data-theme="tokoDark"] {
-  --paper-rgb: 22 27 34;
-  --ink-rgb: 237 238 240;
-  --pine-rgb: 76 156 130;
-  --amber-rgb: 224 164 88;
-  --brick-rgb: 217 100 95;
-  --grid-line: rgba(237, 238, 240, 0.06);
-  --gridline: rgba(237, 238, 240, 0.12);
-}
-
-html, body, #root {
-  height: 100%;
+html,
+body,
+#root {
+  min-height: 100%;
 }
 
 body {
-  font-family: "IBM Plex Sans", sans-serif;
-  color: rgb(var(--ink-rgb));
-  background-color: rgb(var(--paper-rgb));
-  background-image:
-    linear-gradient(var(--grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size: 24px 24px;
-  transition: background-color 0.25s ease, color 0.25s ease;
+  font-family: "Inter", sans-serif;
+  @apply bg-base-200 text-base-content;
 }
+
+/* ------------------------------
+   Nice background
+--------------------------------*/
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+
+  background:
+    radial-gradient(circle at top left, rgba(37,99,235,.10), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(20,184,166,.08), transparent 30%);
+
+  z-index: -2;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+
+  background-image:
+    linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+
+  background-size: 28px 28px;
+
+  opacity: .25;
+
+  z-index: -1;
+}
+
+/* ------------------------------
+   Typography
+--------------------------------*/
 
 .font-display {
   font-family: "Space Grotesk", sans-serif;
 }
+
 .font-mono-data {
   font-family: "IBM Plex Mono", monospace;
 }
 
-/* Blueprint corner marks — nods to drafting-table / plotter theme */
-.corner-marks {
-  position: relative;
-}
-.corner-marks::before,
-.corner-marks::after {
-  content: "";
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  border-color: rgb(var(--pine-rgb));
-  border-style: solid;
-  opacity: 0.55;
-  pointer-events: none;
-}
-.corner-marks::before {
-  top: -6px;
-  left: -6px;
-  border-width: 2px 0 0 2px;
-}
-.corner-marks::after {
-  bottom: -6px;
-  right: -6px;
-  border-width: 0 2px 2px 0;
+/* ------------------------------
+   Scrollbar
+--------------------------------*/
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }
 
-/* Hero signature: a plotted line chart drawing itself */
-.plot-line {
-  stroke-dasharray: 1000;
-  stroke-dashoffset: 1000;
-  animation: draw-line 2s ease-out forwards;
-}
-@keyframes draw-line {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-.plot-dot {
-  opacity: 0;
-  animation: dot-in 0.4s ease-out forwards;
-}
-@keyframes dot-in {
-  to {
-    opacity: 1;
-  }
+::-webkit-scrollbar-thumb {
+  @apply bg-primary rounded-full;
 }
 
-/* Chart entrance — replays whenever axis/type selection changes */
+::-webkit-scrollbar-track {
+  @apply bg-base-300;
+}
+
+/* ------------------------------
+   Glass cards
+--------------------------------*/
+
+.card {
+  @apply rounded-2xl border border-base-300 bg-base-100 shadow-lg transition-all duration-300;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+/* ------------------------------
+   Tables
+--------------------------------*/
+
+.table th {
+  @apply bg-base-200 text-base-content uppercase tracking-wider text-xs;
+}
+
+.table tbody tr {
+  transition: .25s;
+}
+
+.table tbody tr:hover {
+  background-color: rgb(var(--p) / 0.1);
+}
+
+/* ------------------------------
+   Buttons
+--------------------------------*/
+
+.btn {
+  @apply transition-all duration-300;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+/* ------------------------------
+   Inputs
+--------------------------------*/
+
+.input,
+.select,
+.textarea {
+  @apply transition-all duration-300;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  box-shadow: 0 0 0 4px rgba(37,99,235,.15);
+}
+
+/* ------------------------------
+   Badges
+--------------------------------*/
+
+.badge {
+  font-weight: 600;
+}
+
+/* ------------------------------
+   Chart animation
+--------------------------------*/
+
 .chart-enter {
-  animation: chart-enter 0.5s ease-out;
+  animation: chartFade .45s ease;
 }
-@keyframes chart-enter {
+
+@keyframes chartFade {
+
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.98);
+    transform: translateY(15px);
   }
+
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
   }
+
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .plot-line,
-  .plot-dot,
-  .chart-enter {
-    animation: none !important;
-    stroke-dashoffset: 0 !important;
-    opacity: 1 !important;
-    transform: none !important;
+/* ------------------------------
+   Floating animation
+--------------------------------*/
+
+.float {
+  animation: float 5s ease-in-out infinite;
+}
+
+@keyframes float {
+
+  0%,100% {
+    transform: translateY(0px);
   }
+
+  50% {
+    transform: translateY(-8px);
+  }
+
+}
+
+/* ------------------------------
+   Responsive
+--------------------------------*/
+
+@media (max-width:768px){
+
+  .card{
+    border-radius:1rem;
+  }
+
 }

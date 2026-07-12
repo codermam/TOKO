@@ -6,27 +6,30 @@ import UploadPage from "./pages/UploadPage";
 import VisualizePage from "./pages/VisualizePage";
 
 function ThemeToggle() {
-  const [theme, setTheme] = useState(
-    () => localStorage.getItem("toko-theme") || "toko"
-  );
+  const [theme, setTheme] = useState("light");
 
-  useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("toko-theme", theme);
-  }, [theme]);
+  const toggle = () => {
+    const next = theme === "light" ? "dark" : "light";
 
-  const toggle = () => setTheme((t) => (t === "toko" ? "tokoDark" : "toko"));
+    setTheme(next);
+    document.documentElement.setAttribute("data-theme", next);
+  };
 
   return (
     <button
       onClick={toggle}
       className="btn btn-sm btn-ghost"
-      aria-label="Toggle dark mode"
-      title="Toggle dark mode"
+      aria-label="Toggle theme"
+      title="Toggle theme"
     >
-      {theme === "toko" ? (
-        // moon icon — switch to dark
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+      {theme === "light" ? (
+        // Moon icon
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
           <path
             d="M21 12.6A9 9 0 1111.4 3a7 7 0 009.6 9.6z"
             stroke="currentColor"
@@ -36,9 +39,20 @@ function ThemeToggle() {
           />
         </svg>
       ) : (
-        // sun icon — switch to light
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="4.5" stroke="currentColor" strokeWidth="1.8" />
+        // Sun icon
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+          <circle
+            cx="12"
+            cy="12"
+            r="4.5"
+            stroke="currentColor"
+            strokeWidth="1.8"
+          />
           <path
             d="M12 2v2.5M12 19.5V22M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2 12h2.5M19.5 12H22M4.2 19.8L6 18M18 6l1.8-1.8"
             stroke="currentColor"
@@ -50,7 +64,6 @@ function ThemeToggle() {
     </button>
   );
 }
-
 function Navbar() {
   return (
     <div
@@ -76,18 +89,25 @@ function Navbar() {
             />
             <circle cx="22" cy="4" r="2" fill="#E0A458" />
           </svg>
+
           <span className="font-display text-xl font-bold tracking-tight text-ink">
             Toko
           </span>
         </Link>
       </div>
+
       <div className="flex items-center gap-2">
         <Link to="/upload" className="btn btn-sm btn-ghost font-mono-data">
           Upload
         </Link>
-        <Link to="/visualize" className="btn btn-sm btn-primary font-mono-data">
+
+        <Link
+          to="/visualize"
+          className="btn btn-sm btn-primary font-mono-data"
+        >
           Visualize
         </Link>
+
         <ThemeToggle />
       </div>
     </div>
@@ -99,6 +119,7 @@ export default function App() {
     <DataProvider>
       <BrowserRouter>
         <Navbar />
+
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/upload" element={<UploadPage />} />
